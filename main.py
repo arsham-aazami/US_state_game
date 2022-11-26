@@ -1,5 +1,7 @@
 from turtle import Turtle, Screen
+
 import pandas
+
 from score import Score
 
 pointer = Turtle()
@@ -12,16 +14,18 @@ score = Score()
 # datas
 datas = pandas.read_csv("50_states.csv")
 all_states = datas["state"].tolist()
+correct_states = []
+missed_states = []
 
-print(all_states)
-correct_guess = 0
-while correct_guess < 50:
+while len(correct_states) < 50:
     # asking the user to guess
-    correct_states = []
-    missed_states = []
     user_choice = screen.textinput(title="Enter the state ", prompt="What another state's name?").title()
-
     if user_choice == "Exit":
+        for state in all_states:
+            if state not in correct_states:
+                missed_states.append(state)
+        learn_states_table = pandas.DataFrame(missed_states)
+        learn_states_table.to_csv("states_to_learn.csv")
         break
     if user_choice in all_states:
         state_name = datas[datas["state"] == user_choice]["state"]
@@ -44,17 +48,7 @@ while correct_guess < 50:
         # score.goto(-60, 270)
         print(state_name)
         correct_states.append(user_choice)
-
-
     else:
         print("there is no state with this name")
 
-    for state in all_states:
-        if state not in correct_states:
-            missed_states.append(missed_states)
-    correct_guess += 1
-
-# guess_table = pandas.DataFrame(missed_states)
-# guess_table.to_csv("states_to_learn.csv")
-# print(guess_table)
 screen.mainloop()
